@@ -1,2 +1,3 @@
-*.avi
-*.jpg
+kth/
+processed/
+.vscode/
