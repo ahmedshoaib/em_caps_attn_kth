@@ -10,7 +10,6 @@ from torchvision import datasets, transforms
 
 from model import capsules
 from loss import SpreadLoss
-from datasets import smallNORB
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Matrix-Capsules-EM')
