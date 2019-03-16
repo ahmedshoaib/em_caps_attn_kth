@@ -48,19 +48,19 @@ if not os.path.exists(dirName):
 			except ValueError:
 				continue
 			else :
-				for x in range(1,16):
+				for x in range(7,22):
 					vidObj.set(1,x)
 					success, image = vidObj.read()
 					if success:
 						if x%3 == 0:
 							average = (one + two + image)/3        #average of 3 neighbouring frames
 							gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-							if cv2.imwrite("./processed/"+str(x//3)+"/"+curr_class+"/"+image_name(str(curr_file))+".jpg",gray):
+							if cv2.imwrite("./processed/"+str((x//3)-2)+"/"+curr_class+"/"+image_name(str(curr_file))+".jpg",gray):
 								#time.sleep(0.1)
 								pass
 							else:
 								print(x)
-								print("Cannot Write file at : "+"./processed/"+str(x//3)+"/"+curr_class+"/"+image_name(str(curr_file))+".jpg")
+								print("Cannot Write file at : "+"./processed/"+str((x//3)-2)+"/"+curr_class+"/"+image_name(str(curr_file))+".jpg")
 						elif x%3 == 1 :
 							one = image
 						elif x%3 == 2 :
