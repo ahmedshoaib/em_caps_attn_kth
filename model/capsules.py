@@ -348,6 +348,7 @@ class CapsNet(nn.Module):
         x = self.class_caps(x)
         #print("After caps1")
         #print(x.size())
+        #print
     
         return x
 

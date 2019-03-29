@@ -35,15 +35,15 @@ parser.add_argument('--em-iters', type=int, default=2, metavar='N',
                     help='iterations of EM Routing')
 parser.add_argument('--snapshot-folder', type=str, default='./snapshots', metavar='SF',
                     help='where to store the snapshots')
-parser.add_argument('--data-folder', type=str, default='./data', metavar='DF',
+parser.add_argument('--data-folder', type=str, default='./processed', metavar='DF',
                     help='where to store the datasets')
-parser.add_argument('--dataset', type=str, default='cifar', metavar='D',
-                    help='dataset for training(mnist, smallNORB)')
-
+parser.add_argument('--network-length', type=int, default=5, metavar='N',
+                    help='length of network (defalut: 5)')
 
 def get_setting(args):
     kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
-    path = os.path.join(args.data_folder, args.dataset)
+    global part_no
+    path = os.path.join(args.data_folder, str(part_no))
     '''
     if args.dataset == 'mnist':
         num_class = 10
@@ -81,25 +81,25 @@ def get_setting(args):
                       ])),
             batch_size=args.test_batch_size, shuffle=True, **kwargs)
     '''
-    if args.dataset == 'cifar':
-        num_class = 10
+    if args.dataset == 'kth':
+        num_class = 6
         train_loader = torch.utils.data.DataLoader(
-            datasets.CIFAR10(path, train=True, download=True,
+            datasets.ImageFolder(path,
                       transform=transforms.Compose([
-                          transforms.Resize(28),
+                          transforms.Resize(50),
                           transforms.RandomHorizontalFlip(),
-                          #transforms.Grayscale(1),
+                          transforms.Grayscale(1),
                           transforms.ToTensor(),
-                          transforms.Normalize((0.1307,), (0.3081,))
+                          transforms.Normalize((0.2307,), (0.3081,))
                       ])),
             batch_size=args.batch_size, shuffle=True, **kwargs)
         test_loader = torch.utils.data.DataLoader(
-            datasets.CIFAR10(path, train=False,
+            datasets.ImageFolder(path,
                       transform=transforms.Compose([
-                          transforms.Resize(28),
-                          #transforms.Grayscale(1),
+                          transforms.Resize(50),
+                          transforms.Grayscale(1),
                           transforms.ToTensor(),
-                          transforms.Normalize((0.1307,), (0.3081,)),
+                          transforms.Normalize((0.2307,), (0.3081,)),
                       ])),
             batch_size=args.test_batch_size, shuffle=True, **kwargs)
     else:
@@ -207,9 +207,9 @@ def test(test_loader, model, criterion, device):
         test_loss, acc))
     return acc
 
-
+part_no = 1
 def main():
-    global args, best_prec1
+    global args, best_prec1, part_no
     args = parser.parse_args()
     args.cuda = not args.no_cuda and torch.cuda.is_available()
     open('log.txt', 'w').close()
