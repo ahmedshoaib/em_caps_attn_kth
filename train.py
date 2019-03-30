@@ -50,7 +50,7 @@ def get_setting(args):
         train_loader = torch.utils.data.DataLoader(
             datasets.ImageFolder(path,
                       transform=transforms.Compose([
-                          transforms.Resize(50),
+                          transforms.Resize((50,50)),
                           transforms.RandomHorizontalFlip(),
                           transforms.Grayscale(1),
                           transforms.ToTensor(),
@@ -60,7 +60,7 @@ def get_setting(args):
         test_loader = torch.utils.data.DataLoader(
             datasets.ImageFolder(path,
                       transform=transforms.Compose([
-                          transforms.Resize(50),
+                          transforms.Resize((50,50)),
                           transforms.Grayscale(1),
                           transforms.ToTensor(),
                           transforms.Normalize((0.2307,), (0.3081,)),
