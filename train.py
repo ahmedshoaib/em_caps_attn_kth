@@ -142,6 +142,7 @@ class AverageMeter(object):
 
 
 def train(train_loader, model, criterion, optimizer, epoch, device):
+    global part_no
     batch_time = AverageMeter()
     data_time = AverageMeter()
 
@@ -151,6 +152,8 @@ def train(train_loader, model, criterion, optimizer, epoch, device):
     end = time.time()
 
     for batch_idx, (data, target) in enumerate(train_loader):
+        #print(batch_idx)
+        #print(data,target)
         data_time.update(time.time() - end)
 
         data, target = data.to(device), target.to(device)
@@ -167,7 +170,7 @@ def train(train_loader, model, criterion, optimizer, epoch, device):
 
         epoch_acc += acc[0].item()
         if batch_idx % args.log_interval == 0:
-            print('Train Epoch: {}\t[{}/{} ({:.0f}%)]\t'
+            print('Train '+str(part_no)+' Epoch: {}\t[{}/{} ({:.0f}%)]\t'
                   'Loss: {:.6f}\tAccuracy: {:.6f}\t'
                   'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                   'Data {data_time.val:.3f} ({data_time.avg:.3f})'.format(
@@ -178,8 +181,8 @@ def train(train_loader, model, criterion, optimizer, epoch, device):
     return epoch_acc
 
 
-def snapshot(model, folder, epoch):
-    path = os.path.join(folder, 'model_{}.pth'.format(epoch))
+def snapshot(model, folder, epoch,part_no):
+    path = os.path.join(folder, str(part_no), 'model_{}.pth'.format(epoch))
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
     print('saving model to {}'.format(path))
@@ -187,6 +190,7 @@ def snapshot(model, folder, epoch):
 
 
 def test(test_loader, model, criterion, device):
+    global part_no
     model.eval()
     test_loss = 0
     acc = 0
@@ -200,10 +204,10 @@ def test(test_loader, model, criterion, device):
 
     test_loss /= test_len
     acc /= test_len
-    print('\nTest set: Average loss: {:.6f}, Accuracy: {:.6f} \n'.format(
+    print('\nTest set '+str(part_no)+': Average loss: {:.6f}, Accuracy: {:.6f} \n'.format(
         test_loss, acc))
     with open("log.txt", "a") as f:
-     f.write('\nTest set: Average loss: {:.6f}, Accuracy: {:.6f} \n'.format(
+     f.write('\nTest set '+str(part_no)+': Average loss: {:.6f}, Accuracy: {:.6f} \n'.format(
         test_loss, acc))
     return acc
 
@@ -220,30 +224,32 @@ def main():
 
     device = torch.device("cuda" if args.cuda else "cpu")
     
+    for i in range(1,args.network_length+1):
     # datasets
-    num_class, train_loader, test_loader = get_setting(args)
+        num_class, train_loader, test_loader = get_setting(args)
 
     # model
     #A, B, C, D = 64, 8, 16, 16
-    A, B, C, D = 32, 32, 32, 32
-    model = capsules(A=A, B=B, C=C, D=D, E=num_class,
-                     iters=args.em_iters).to(device)
+        A, B, C, D = 32, 32, 32, 32
+        model = capsules(A=A, B=B, C=C, D=D, E=num_class,
+                         iters=args.em_iters).to(device)
 
-    criterion = SpreadLoss(num_class=num_class, m_min=0.2, m_max=0.9)
-    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=1)
+        criterion = SpreadLoss(num_class=num_class, m_min=0.2, m_max=0.9)
+        optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=1)
 
-    best_acc = test(test_loader, model, criterion, device)
-    for epoch in range(1, args.epochs + 1):
-        acc = train(train_loader, model, criterion, optimizer, epoch, device)
-        acc /= len(train_loader)
-        scheduler.step(acc)
-        if epoch % args.test_intvl == 0:
-            best_acc = max(best_acc, test(test_loader, model, criterion, device))
-    best_acc = max(best_acc, test(test_loader, model, criterion, device))
-    print('best test accuracy: {:.6f}'.format(best_acc))
+        best_acc = test(test_loader, model, criterion, device)
+        for epoch in range(1, args.epochs + 1):
+            acc = train(train_loader, model, criterion, optimizer, epoch, device)
+            acc /= len(train_loader)
+            scheduler.step(acc)
+            if epoch % args.test_intvl == 0:
+                best_acc = max(best_acc, test(test_loader, model, criterion, device))
+        best_acc = max(best_acc, test(test_loader, model, criterion, device))
+        print('best test accuracy for net no '+str(i)+': {:.6f}'.format(best_acc))
 
-    snapshot(model, args.snapshot_folder, args.epochs)
+        snapshot(model, args.snapshot_folder, args.epochs,part_no)
+        part_no += 1
 
 if __name__ == '__main__':
     main()
