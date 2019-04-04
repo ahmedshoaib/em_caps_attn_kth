@@ -9,7 +9,7 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 
 from model import capsules
-from loss import SpreadLoss
+from loss import spread_loss
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Matrix-Capsules-EM')
