@@ -1,4 +1,5 @@
 kth/
 processed/
 .vscode/
-__pycache__/
+loss/__pycache__/
+model/__pycache__/
