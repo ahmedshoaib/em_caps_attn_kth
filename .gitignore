@@ -1,3 +1,4 @@
 kth/
 processed/
 .vscode/
+__pycache__/
