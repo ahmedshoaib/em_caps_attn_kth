@@ -2,3 +2,7 @@ kth/
 processed/
 .vscode/
 processed/
+log.txt
+loss/
+snapshots/
+model/__pycache__/
