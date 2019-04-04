@@ -3,6 +3,6 @@ processed/
 .vscode/
 processed/
 log.txt
-loss/
+loss/__pycache__/
 snapshots/
 model/__pycache__/
