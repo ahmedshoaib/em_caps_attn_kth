@@ -42,8 +42,7 @@ parser.add_argument('--network-length', type=int, default=5, metavar='N',
 
 def get_setting(args):
     kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
-    global part_no
-    path = os.path.join(args.data_folder, str(part_no))
+    path = os.path.join(args.data_folder)
 
     if os.path.exists(os.path.dirname(path)):
         num_class = 6
@@ -106,7 +105,7 @@ class AverageMeter(object):
 
 
 def train(train_loader, model, criterion, optimizer, epoch, device):
-    global part_no
+
     batch_time = AverageMeter()
     data_time = AverageMeter()
 
@@ -154,7 +153,7 @@ def snapshot(model, folder, epoch,part_no):
 
 
 def test(test_loader, model, criterion, device):
-    global part_no
+
     model.eval()
     test_loss = 0
     acc = 0
@@ -175,7 +174,7 @@ def test(test_loader, model, criterion, device):
         test_loss, acc))
     return acc
 
-part_no = 1
+
 def main():
     global args, best_prec1, part_no
     args = parser.parse_args()
@@ -188,32 +187,32 @@ def main():
 
     device = torch.device("cuda" if args.cuda else "cpu")
     
-    for i in range(1,args.network_length+1):
-    # datasets
-        num_class, train_loader, test_loader = get_setting(args)
+
+# datasets
+    num_class, train_loader, test_loader = get_setting(args)
 
     # model
     #A, B, C, D = 64, 8, 16, 16
-        A, B, C, D = 32, 32, 32, 32
-        model = capsules(A=A, B=B, C=C, D=D, E=num_class,
-                         iters=args.em_iters).to(device)
+    A, B, C, D = 32, 32, 32, 32
+    model = capsules(A=A, B=B, C=C, D=D, E=num_class,
+                        iters=args.em_iters).to(device)
 
-        criterion = SpreadLoss(num_class=num_class, m_min=0.2, m_max=0.9)
-        optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=1)
+    criterion = SpreadLoss(num_class=num_class, m_min=0.2, m_max=0.9)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=1)
 
-        best_acc = test(test_loader, model, criterion, device)
-        for epoch in range(1, args.epochs + 1):
-            acc = train(train_loader, model, criterion, optimizer, epoch, device)
-            acc /= len(train_loader)
-            scheduler.step(acc)
-            if epoch % args.test_intvl == 0:
-                best_acc = max(best_acc, test(test_loader, model, criterion, device))
-        best_acc = max(best_acc, test(test_loader, model, criterion, device))
-        print('best test accuracy for net no '+str(i)+': {:.6f}'.format(best_acc))
+    best_acc = test(test_loader, model, criterion, device)
+    for epoch in range(1, args.epochs + 1):
+        acc = train(train_loader, model, criterion, optimizer, epoch, device)
+        acc /= len(train_loader)
+        scheduler.step(acc)
+        if epoch % args.test_intvl == 0:
+            best_acc = max(best_acc, test(test_loader, model, criterion, device))
+    best_acc = max(best_acc, test(test_loader, model, criterion, device))
+    print('best test accuracy for net no '+str(i)+': {:.6f}'.format(best_acc))
 
-        snapshot(model, args.snapshot_folder, args.epochs,part_no)
-        part_no += 1
+    snapshot(model, args.snapshot_folder, args.epochs,part_no)
+    
 
 if __name__ == '__main__':
     main()
