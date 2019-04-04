@@ -7,9 +7,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
+import numpy as np
 
 from model import capsules
-from loss import spread_loss
+from loss import SpreadLoss
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Matrix-Capsules-EM')
@@ -115,7 +116,9 @@ def train(train_loader, model, criterion, optimizer, epoch, device):
 
     for batch_idx, (data, target) in enumerate(train_loader):
         #print(batch_idx)
-        print(type(data))
+        #print("bbbbbbbbbbb")
+        #print((data,target))
+        #print(type(data))
         data_time.update(time.time() - end)
 
         data, target = data.to(device), target.to(device)
@@ -159,6 +162,11 @@ def test(test_loader, model, criterion, device):
     test_len = len(test_loader)
     with torch.no_grad():
         for data, target in test_loader:
+            print("bbbbbbbbbbb")
+            #print((data,target))
+            print(type(data))
+            print(data.size())
+
             data, target = data.to(device), target.to(device)
             output = model(data)
             test_loss += criterion(output, target, r=1).item()
