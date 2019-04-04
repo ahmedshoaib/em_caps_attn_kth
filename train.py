@@ -13,9 +13,9 @@ from loss import SpreadLoss
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Matrix-Capsules-EM')
-parser.add_argument('--batch-size', type=int, default=20, metavar='N',
+parser.add_argument('--batch-size', type=int, default=2, metavar='N',
                     help='input batch size for training (default: 20)')
-parser.add_argument('--test-batch-size', type=int, default=20, metavar='N',
+parser.add_argument('--test-batch-size', type=int, default=2, metavar='N',
                     help='input batch size for testing (default: 20)')
 parser.add_argument('--test-intvl', type=int, default=1, metavar='N',
                     help='test intvl (default: 1)')
@@ -40,6 +40,10 @@ parser.add_argument('--data-folder', type=str, default='./processed', metavar='D
 parser.add_argument('--network-length', type=int, default=5, metavar='N',
                     help='length of network (defalut: 5)')
 
+def npy_loader(path):
+    sample = torch.from_numpy(np.load(path))
+    return sample
+
 def get_setting(args):
     kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
     path = os.path.join(args.data_folder)
@@ -47,23 +51,18 @@ def get_setting(args):
     if os.path.exists(os.path.dirname(path)):
         num_class = 6
         train_loader = torch.utils.data.DataLoader(
-            datasets.ImageFolder(path,
-                      transform=transforms.Compose([
-                          transforms.Resize((50,50)),
-                          transforms.RandomHorizontalFlip(),
-                          transforms.Grayscale(1),
-                          transforms.ToTensor(),
-                          transforms.Normalize((0.2307,), (0.3081,))
-                      ])),
+            datasets.DatasetFolder(
+             root=path,
+             loader=npy_loader,
+             extensions=['.npy']
+            ),
             batch_size=args.batch_size, shuffle=True, **kwargs)
         test_loader = torch.utils.data.DataLoader(
-            datasets.ImageFolder(path,
-                      transform=transforms.Compose([
-                          transforms.Resize((50,50)),
-                          transforms.Grayscale(1),
-                          transforms.ToTensor(),
-                          transforms.Normalize((0.2307,), (0.3081,)),
-                      ])),
+            datasets.DatasetFolder(
+             root=path,
+             loader=npy_loader,
+             extensions=['.npy']
+            ),
             batch_size=args.test_batch_size, shuffle=True, **kwargs)
     else:
         raise NameError('Undefined dataset {}'.format(args.dataset))
@@ -116,7 +115,7 @@ def train(train_loader, model, criterion, optimizer, epoch, device):
 
     for batch_idx, (data, target) in enumerate(train_loader):
         #print(batch_idx)
-        #print(data,target)
+        print(type(data))
         data_time.update(time.time() - end)
 
         data, target = data.to(device), target.to(device)
