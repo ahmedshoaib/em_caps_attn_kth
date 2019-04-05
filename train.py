@@ -51,13 +51,11 @@ def npy_loader(path):
 						  transforms.Normalize((0.2307,), (0.3081,))
 					  ])
 	for i in range(0,sample.size()[0]):
-		img = transforms.ToPILImage(mode='L')(sample[i,:,:])
-		img_tensor = img_transform(img)
 		if i == 0:
-			img = transforms.ToPILImage(mode='L')(sample[i,:,:])
+			img = transforms.ToPILImage(mode='L')(sample[i,:,:].unsqueeze(0))
 			img_tensor = img_transform(img)
 		else:
-			img = transforms.ToPILImage(mode='L')(sample[i,:,:])
+			img = transforms.ToPILImage(mode='L')(sample[i,:,:].unsqueeze(0))
 			temp_tensor = img_transform(img)
 			img_tensor = torch.stack((img_tensor,temp_tensor),0)
 	print(img_tensor.size())
