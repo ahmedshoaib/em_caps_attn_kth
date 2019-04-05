@@ -59,7 +59,7 @@ def main():
 								one = image
 							elif x%3 == 2 :
 								two = image
-					video_array = np.stack((list_arr),axis = -1)
+					video_array = np.stack((list_arr),axis = 0)
 					if np.save("./processed/"+curr_class+"/"+image_name(str(curr_file)),video_array):
 						#time(0.1)
 						pass
