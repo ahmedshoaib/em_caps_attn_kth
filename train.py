@@ -57,9 +57,9 @@ def npy_loader(path):
 		else:
 			img = transforms.ToPILImage(mode='L')(sample[i,:,:].unsqueeze(0))
 			temp_tensor = img_transform(img)
-			img_tensor = torch.stack((img_tensor,temp_tensor),0)
-	print(img_tensor.size())
-	print("||Size of img_tensor ")
+			img_tensor = torch.cat((img_tensor,temp_tensor),0)
+	#print(img_tensor.size())
+	#print("||Size of img_tensor ")
 	return img_tensor
 
 
