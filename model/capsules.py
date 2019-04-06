@@ -331,7 +331,7 @@ class CapsNet(nn.Module):
 										coor_add=True, w_shared=True) 
 		
 	def forward(self, x):
-		print("Slice input : ",x.size())
+		#print("Slice input : ",x.size())
 		x = self.conv1(x)
 		#print("After Conv :")
 		#print(x.size())
@@ -344,8 +344,8 @@ class CapsNet(nn.Module):
 		#print("After caps1")
 		#print(x.size())
 		x = self.conv_caps2(x) 
-		print("After caps2")
-		print(x.size())
+		#print("After caps2")
+		#print(x.size())
 		x = self.class_caps(x)
 		#print("After caps1")
 		#print(x.size())
@@ -364,25 +364,25 @@ class CapsNetF(nn.Module):
 		self.c_net5 = CapsNet(**kwargs)
 
 	def forward(self, x):
-		print("recieved tensor : ",x.size())
+		#print("recieved tensor : ",x.size())
 		out1 = self.c_net1(x[:,0,:,:].unsqueeze(1)).unsqueeze(1)
-		print("tensor slice 1 : ",out1.size())
+		#print("tensor slice 1 : ",out1.size())
 		out2 = self.c_net2(x[:,1,:,:].unsqueeze(1)).unsqueeze(1)
-		print("tensor slice 2 : ",out2.size())
+		#print("tensor slice 2 : ",out2.size())
 		out3 = self.c_net3(x[:,2,:,:].unsqueeze(1)).unsqueeze(1)
-		print("tensor slice 3 : ",out3.size())
+		#print("tensor slice 3 : ",out3.size())
 		out4 = self.c_net4(x[:,3,:,:].unsqueeze(1)).unsqueeze(1)
-		print("tensor slice 4 : ",out4.size())
+		#print("tensor slice 4 : ",out4.size())
 		out5 = self.c_net5(x[:,4,:,:].unsqueeze(1)).unsqueeze(1)
-		print("tensor slice 5 : ",out5.size())
+		#print("tensor slice 5 : ",out5.size())
 		concatenated_outputs = torch.cat((out1,out2,out3,out4,out5),1)
-		print("concat size : ",concatenated_outputs.size())
+		#print("concat size : ",concatenated_outputs.size())
 		for i in range(0,concatenated_outputs.size()[0]):
 			if i ==0:
 				res = torch.mean(concatenated_outputs[i],0).unsqueeze(0)
 			else:
 				res = torch.cat((res,torch.mean(concatenated_outputs[i],0).unsqueeze(0)),0)
-		print("Final shape : ",res.size())
+		#print("Final shape : ",res.size())
 		return res
 
 
@@ -405,4 +405,4 @@ python -m capsules.py
 '''
 if __name__ == '__main__':
 	model = capsules(E=6)
-	print(model)
+	#print(model)

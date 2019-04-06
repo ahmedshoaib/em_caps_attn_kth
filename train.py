@@ -14,13 +14,13 @@ from loss import SpreadLoss
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Matrix-Capsules-EM')
-parser.add_argument('--batch-size', type=int, default=2, metavar='N',
+parser.add_argument('--batch-size', type=int, default=7, metavar='N',
 					help='input batch size for training (default: 20)')
-parser.add_argument('--test-batch-size', type=int, default=2, metavar='N',
+parser.add_argument('--test-batch-size', type=int, default=10, metavar='N',
 					help='input batch size for testing (default: 20)')
 parser.add_argument('--test-intvl', type=int, default=1, metavar='N',
 					help='test intvl (default: 1)')
-parser.add_argument('--epochs', type=int, default=25, metavar='N',
+parser.add_argument('--epochs', type=int, default=30, metavar='N',
 					help='number of epochs to train (default: 25)')
 parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
 					help='learning rate (default: 0.01)')
