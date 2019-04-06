@@ -155,7 +155,7 @@ def train(train_loader, model, criterion, optimizer, epoch, device):
 
 		epoch_acc += acc[0].item()
 		if batch_idx % args.log_interval == 0:
-			print('Train '+str(part_no)+' Epoch: {}\t[{}/{} ({:.0f}%)]\t'
+			print('Train  Epoch: {}\t[{}/{} ({:.0f}%)]\t'
 				  'Loss: {:.6f}\tAccuracy: {:.6f}\t'
 				  'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
 				  'Data {data_time.val:.3f} ({data_time.avg:.3f})'.format(
@@ -166,8 +166,8 @@ def train(train_loader, model, criterion, optimizer, epoch, device):
 	return epoch_acc
 
 
-def snapshot(model, folder, epoch,part_no):
-	path = os.path.join(folder, str(part_no), 'model_{}.pth'.format(epoch))
+def snapshot(model, folder, epoch):
+	path = os.path.join(folder, 'model_{}.pth'.format(epoch))
 	if not os.path.exists(os.path.dirname(path)):
 		os.makedirs(os.path.dirname(path))
 	print('saving model to {}'.format(path))
@@ -182,10 +182,10 @@ def test(test_loader, model, criterion, device):
 	test_len = len(test_loader)
 	with torch.no_grad():
 		for data, target in test_loader:
-			print("bbbbbbbbbbb")
+			#print("bbbbbbbbbbb")
 			#print((data,target))
-			print(type(data))
-			print(data.size())
+			#print(type(data))
+			#print(data.size())
 
 			data, target = data.to(device), target.to(device)
 			output = model(data)
@@ -194,16 +194,16 @@ def test(test_loader, model, criterion, device):
 
 	test_loss /= test_len
 	acc /= test_len
-	print('\nTest set '+str(part_no)+': Average loss: {:.6f}, Accuracy: {:.6f} \n'.format(
+	print('\nTest set : Average loss: {:.6f}, Accuracy: {:.6f} \n'.format(
 		test_loss, acc))
 	with open("log.txt", "a") as f:
-	 f.write('\nTest set '+str(part_no)+': Average loss: {:.6f}, Accuracy: {:.6f} \n'.format(
+	 f.write('\nTest set : Average loss: {:.6f}, Accuracy: {:.6f} \n'.format(
 		test_loss, acc))
 	return acc
 
 
 def main():
-	global args, best_prec1, part_no
+	global args, best_prec1
 	args = parser.parse_args()
 	args.cuda = not args.no_cuda and torch.cuda.is_available()
 	open('log.txt', 'w').close()
@@ -219,8 +219,8 @@ def main():
 	num_class, train_loader, test_loader = get_setting(args)
 
 	# model
-	#A, B, C, D = 64, 8, 16, 16
-	A, B, C, D = 32, 32, 32, 32
+	A, B, C, D = 64, 8, 16, 16
+	#A, B, C, D = 32, 32, 32, 32
 	model = capsules(A=A, B=B, C=C, D=D, E=num_class,
 						iters=args.em_iters).to(device)
 
@@ -236,9 +236,9 @@ def main():
 		if epoch % args.test_intvl == 0:
 			best_acc = max(best_acc, test(test_loader, model, criterion, device))
 	best_acc = max(best_acc, test(test_loader, model, criterion, device))
-	print('best test accuracy for net no '+str(i)+': {:.6f}'.format(best_acc))
+	print('best test accuracy for net no : {:.6f}'.format(best_acc))
 
-	snapshot(model, args.snapshot_folder, args.epochs,part_no)
+	snapshot(model, args.snapshot_folder, args.epochs)
 	
 
 if __name__ == '__main__':
