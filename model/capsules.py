@@ -331,7 +331,7 @@ class CapsNet(nn.Module):
 										coor_add=True, w_shared=True) 
 		
 	def forward(self, x):
-		#print(x.size())
+		print("Slice input : ",x.size())
 		x = self.conv1(x)
 		#print("After Conv :")
 		#print(x.size())
@@ -344,8 +344,8 @@ class CapsNet(nn.Module):
 		#print("After caps1")
 		#print(x.size())
 		x = self.conv_caps2(x) 
-		#print("After caps1")
-		#print(x.size())
+		print("After caps2")
+		print(x.size())
 		x = self.class_caps(x)
 		#print("After caps1")
 		#print(x.size())
@@ -365,16 +365,16 @@ class CapsNetF(nn.Module):
 
 	def forward(self, x):
 		print("recieved tensor : ",x.size())
-		out1 = self.c_net1(x[:,0,:,:].unsueeze(1))
-		print("tensor slice 1 : ",x.size())
-		out2 = self.c_net2(x[:,1,:,:].unsueeze(1))
-		print("tensor slice 2 : ",x.size())
-		out3 = self.c_net3(x[:,2,:,:].unsueeze(1))
-		print("tensor slice 3 : ",x.size())
-		out4 = self.c_net4(x[:,3,:,:].unsueeze(1))
-		print("tensor slice 4 : ",x.size())
-		out5 = self.c_net5(x[:,4,:,:].unsueeze(1))
-		print("tensor slice 5 : ",x.size())
+		out1 = self.c_net1(x[:,0,:,:].unsqueeze(1))
+		print("tensor slice 1 : ",out1.size())
+		out2 = self.c_net2(x[:,1,:,:].unsqueeze(1))
+		print("tensor slice 2 : ",out2.size())
+		out3 = self.c_net3(x[:,2,:,:].unsqueeze(1))
+		print("tensor slice 3 : ",out3.size())
+		out4 = self.c_net4(x[:,3,:,:].unsqueeze(1))
+		print("tensor slice 4 : ",out4.size())
+		out5 = self.c_net5(x[:,4,:,:].unsqueeze(1))
+		print("tensor slice 5 : ",out5.size())
 
 
 
