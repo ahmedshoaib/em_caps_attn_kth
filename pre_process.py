@@ -53,7 +53,8 @@ def main():
 						if success:
 							if x%3 == 0:
 								average = (one + two + image)/3        #average of 3 neighbouring frames
-								gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+								average = np.uint8(average)
+								gray = cv2.cvtColor(average, cv2.COLOR_BGR2GRAY)
 								list_arr.append(gray)
 							elif x%3 == 1 :
 								one = image
