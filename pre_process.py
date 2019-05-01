@@ -52,7 +52,7 @@ def main():
 						success, image = vidObj.read()
 						if success:
 							if x%3 == 0:
-								average = (one + two + image)/3        #average of 3 neighbouring frames
+								average = abs(one-two) + image
 								average = np.uint8(average)
 								gray = cv2.cvtColor(average, cv2.COLOR_BGR2GRAY)
 								list_arr.append(gray)
